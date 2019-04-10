@@ -9,9 +9,10 @@ class oreder_status extends Model
     protected $table ='oreder_status';
     protected $fillable = ['id_user','id_barang','id_bukti','status'];
      public $timestamps=true;
+
      public function user()
      {
-         return $this->belongsTo('App\user','id_user');
+         return $this->belongsTo('App\User','id_user');
      }
      public function barang()
      {

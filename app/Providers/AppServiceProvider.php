@@ -17,9 +17,9 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
         view()->composer('partial.header',function ($view){
             $kategori = \App\kategori::all();
-            // $jenis=\App\jenis::all();
+             $jenis=\App\jenis::all();
             $recent = \App\barang::orderBy('created_at','desc')->take(3)->get();
-            $view->with(compact('kategori','recent'));
+            $view->with(compact('kategori','recent','jenis'));
         });
     }
 

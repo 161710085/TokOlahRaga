@@ -7,15 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class cart extends Model
 {
     protected $table = 'carts';
-    protected $fillable = ['id_user','id_barang','jumlah','total_harga'];
+    protected $fillable = ['id_user','id_barang','jumlah',];
     public $timestamps = true;
     public function user()
     {
-        return $this->belongTo('App\user','id_user');
+        return $this->belongsTo('App\user','id_user');
     }
     public function barang()
     {
-        return $this->belongTo('App\barang','id_barang');
+        return $this->belongsTo('App\barang','id_barang');
     }
     public function checkout()
     {

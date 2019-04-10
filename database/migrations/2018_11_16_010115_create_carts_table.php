@@ -21,9 +21,7 @@ class CreateCartsTable extends Migration
             $table->unsignedInteger('id_barang');
             $table->foreign('id_barang')->references('id')
             ->on('barangs')->onUpdate('cascade')->onDelete('cascade');      
-            $table->integer('jumlah');
-            $table->integer('total_harga');
-            
+            $table->integer('quantity');
             $table->timestamps();
         });
     }

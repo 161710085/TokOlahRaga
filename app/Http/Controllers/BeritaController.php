@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\berita;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Html\Builder;
+use Yajra\DataTables\Datatables;
 use Session;
+use File;
 class BeritaController extends Controller
 {
     /**
@@ -15,10 +18,27 @@ class BeritaController extends Controller
     {
         $this->middleware('auth');
     }
-            public function index()
+    public function index(Request $request, Builder $builder)
     {
-        $berita = berita::all();
-        return view('berita.index',compact('berita'));
+
+        if ($request->ajax()) {
+            $berita = berita::all();
+             return Datatables::of($berita)
+                     ->addColumn('action', function ($berita) {  
+                         return view('datatable._action', [
+                         'model'=> $berita,
+                         'form_url'=> route('berita.destroy', $berita->id),
+                         'edit_url' => route('berita.edit',$berita->id),
+                         'confirm_message' => 'Yakin mau menghapus ' .$berita->nama . '?'
+         
+                     ]);
+                     })->make(true);
+         }
+         $html = $builder
+         ->addColumn(['data' => 'judul', 'name'=>'judul', 'title'=>'Nama berita'])
+        ->addColumn(['data' => 'created_at', 'name'=>'created_at', 'title'=>'Dibuat pada'])
+        ->addColumn(['data' => 'action', 'name'=>'action', 'title'=>'Aksi', 'orderable'=>false, 'searchable'=>false]);
+        return view('Berita.index')->with(compact('html'));
     }
     /**
      * Show the form for creating a new resource.
@@ -38,23 +58,35 @@ class BeritaController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
-           'judul' => 'required',
-        'artikel' => 'required'
-        ]);
+        $this->validate($request, [
+            'judul' => 'required',
+            'isi' => 'required',
+            'foto' => 'image|max:20048']);
             $berita = new berita;
             $berita->judul = $request->judul;
-                        $berita->artikel = $request->artikel;
-            $berita->slug =str_slug($request->nama,'-');
-            $berita->save();
-            Session::flash("flash_notification", [
+            $berita->isi = $request->isi;
+        $berita->slug = str_slug($request->judul,'-');
+        // isi field foto jika ada foto yang diupload
+        if ($request->hasFile('foto')) {
+        // Mengambil file yang diupload
+        $uploaded_foto = $request->file('foto');
+        // mengambil extension file
+        $extension = $uploaded_foto->getClientOriginalExtension();
+        // membuat nama file random berikut extension
+        $filename = md5(time()) . '.' . $extension;
+        // menyimpan foto ke folder public/img/berita
+        $destinationPath = public_path() . DIRECTORY_SEPARATOR . 'img/berita';
+        $uploaded_foto->move($destinationPath, $filename);        
+        // mengisi field foto di berita dengan filename yang baru dibuat
+        $berita->foto = $filename;
+        $berita->save();
+        }
+        Session::flash("flash_notification", [
             "level"=>"success",
-            "message"=>"Berhasil menyimpan <b>$berita->nama</b>"
-            ]);
-            return redirect()->route('berita.index');
-            
-            
-    }
+            "message"=>"Berhasil menyimpan $berita->judul"
+            ]);  
+            return redirect()->route('berita.index');              
+        }
 
     /**
      * Display the specified resource.
@@ -62,7 +94,7 @@ class BeritaController extends Controller
      * @param  \App\berita  $berita
      * @return \Illuminate\Http\Response
      */
-    public function show(berita $berita)
+    public function show($id)
     {
         $berita = berita::findOrFail($id);
         return view('berita.show',compact('berita'));
@@ -74,7 +106,7 @@ class BeritaController extends Controller
      * @param  \App\berita  $berita
      * @return \Illuminate\Http\Response
      */
-    public function edit(berita $berita)
+    public function edit($id)
     {
         $berita = berita::findOrFail($id);
 
@@ -88,30 +120,34 @@ class BeritaController extends Controller
      * @param  \App\berita  $berita
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, berita $berita)
+    public function update(Request $request, $id)
     {
         
-        $this->validate($request,[
-               'judul' => 'required',
-            'artikel' => 'required'
-        ]); 
+        $this->validate($request, ['judul' => 'required',
+                                'isi' => 'required',
+                                'foto' => 'image|max:20048']);
         $berita = berita::find($id);
         $berita -> update($request->all());
-        // isi field gambar jika ada gambar yang diupload
+        // $berita->slug = str_slug($request->judul,'-');
+        // isi field logo jika ada logo yang diupload
         if ($request->hasFile('foto')) {
         // Mengambil file yang diupload
-        $uploaded_logo = $request->file('foto');
+        $uploaded_foto = $request->file('foto');
         // mengambil extension file
-        $extension = $uploaded_logo->getClientOriginalExtension();
+        $extension = $uploaded_foto->getClientOriginalExtension();
         // membuat nama file random berikut extension
         $filename = md5(time()) . '.' . $extension;
-        // menyimpan gambar ke folder public/img
-        $destinationPath = public_path() . DIRECTORY_SEPARATOR . 'img/';
-        $uploaded_logo->move($destinationPath, $filename);
-        // mengisi field gambar di Galeri dengan filename yang baru dibuat
+        // menyimpan foto ke folder public/img/berita
+        $destinationPath = public_path() . DIRECTORY_SEPARATOR . 'img/berita';
+        $uploaded_foto->move($destinationPath, $filename);
+        // mengisi field foto di berita dengan filename yang baru dibuat
         $berita->foto = $filename;
         $berita->save();
-    }
+        }
+        Session::flash("flash_notification", [
+            "level"=>"success",
+            "message"=>"Berhasil menyimpan $berita->judul"
+            ]);  
         return redirect()->route('berita.index');
     }
 
@@ -121,12 +157,12 @@ class BeritaController extends Controller
      * @param  \App\berita  $berita
      * @return \Illuminate\Http\Response
      */
-    public function destroy(berita $berita)
+    public function destroy($id)
     {
-        $berita = berita::findOrFail($berita->id);
+        $berita = berita::findOrFail($id);
         if ($berita->foto) {
             $old_foto = $berita->foto;
-            $filepath = public_path() . DIRECTORY_SEPARATOR . 'assets/img/berita/'
+            $filepath = public_path() . DIRECTORY_SEPARATOR . 'img/berita'
             . DIRECTORY_SEPARATOR . $berita->foto;
             try {
             File::delete($filepath);

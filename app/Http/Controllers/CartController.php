@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\cart;
 use Illuminate\Http\Request;
-
+use App\barang;
 class CartController extends Controller
 {
     /**
@@ -35,7 +35,22 @@ class CartController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $this->validate($request,[
+            'id_user' => 'required|',
+            'id_barang' => 'required|',
+            'jumlah' => 'required|',
+            
+            ]);
+            $cart = new cart;
+            $barang=barang::find($request->id_barang);
+            $cart->id_user = $request->id_user;
+            $cart->id_barang = $request->id_barang;
+            $cart->jumlah = $request->jumlah;
+            $cart->total_harga = $request->jumlah * $barang->harga;
+            $barang->stok=$barang->stok - $request->jumlah;
+            $barang->save();
+            $cart->save();
+            return response()->json(['success'=>true]);
     }
 
     /**

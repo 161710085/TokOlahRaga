@@ -6,28 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class checkout extends Model
 {
-    protected $table = 'checkouts';
-    protected $fillable = ['id_user','nama','id_provinsi','id_kota','id_kecamatan',
-'kodepos','alamat','email','phone','id_cart'];
-    public $timestamps = true;
-    public function user()
-    {
-        return $this->belongTo('App\user','id_user');
-    }
-    public function provinsi()
-    {
-        return $this->belongTo('App\provinsi','id_provinsi');
-    }
-    public function kota()
-    {
-        return $this->belongTo('App\kota','id_kota');
-    }
-    public function kecamatan()
-    {
-        return $this->belongTo('App\kecamatan','id_kecamatan');
-    }
-    public function cart()
-    {
-        return $this->belongTo('App\cart','id_cart');
-    }
+   //
+   protected $table = 'checkouts';
+   protected $fillable = array('id_user', 'nama_lengkap','nomer_telepon','email','provinsi','kab_kot','kecamatan','alamat','id_barang');
+   public $timestamp = true;
+
+   public function oreder_status() {
+       return $this->hasMany('App\oreder_status', 'id_checkout');
+   }
+   public function User() {
+       return $this->belongsTo('App\User', 'id_user');
+   }
+   public function barang() {
+       return $this->belongsTo('App\barang', 'id_barang');
+   }
 }

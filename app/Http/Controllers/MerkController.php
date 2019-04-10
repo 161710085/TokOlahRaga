@@ -33,13 +33,10 @@ class MerkController extends Controller
                      })->make(true);
          }
          $html = $builder
-             ->addColumn(['data' => 'nama', 'name'=>'nama','title'=>'Nama Merk'])
-         
-             ->addColumn(['data' => 'action', 'name'=>'action', 'title'=>'', 'orderable'=>false,
-                          'searchable'=>false]);
-         return view('merk.index', compact('html'));
-   
-    }
+         ->addColumn(['data' => 'nama_merk', 'name'=>'nama_merk', 'title'=>'Nama Merk'])
+         ->addColumn(['data' => 'action', 'name'=>'action', 'title'=>'Aksi', 'orderable'=>false, 'searchable'=>false]);
+         return view('merk.index')->with(compact('html'));
+         }
 
     /**
      * Show the form for creating a new resource.
@@ -60,20 +57,18 @@ class MerkController extends Controller
     public function store(Request $request)
     {
     
-        $this->validate($request,[
-            'nama' => 'required|'
-                
-            ]);
+        $this->validate($request, ['nama_merk' => 'required|unique:merks']);
         $merk = new merk;
-        $merk->nama = $request->nama;
-       
-          $merk->save();
+        $merk->nama_merk = $request->nama_merk;
+        $merk->slug = str_slug($request->nama_merk,'-');
+        $merk->save();
         Session::flash("flash_notification", [
-        "level"=>"success",
-        "message"=>"Berhasil menyimpan <b>$merk->merk</b>"
-        ]);
+            "level"=>"success",
+            "message"=>"Berhasil menyimpan $merk->nama_merk"
+            ]);
         return redirect()->route('merk.index');
     }
+
 
     /**
      * Display the specified resource.
@@ -96,9 +91,8 @@ class MerkController extends Controller
      */
     public function edit($id)
     {
-        $merk = merk::findOrFail($id);
-
-        return view('merk.edit',compact('merk'));
+        $merk = merk::find($id);
+        return view('merk.edit')->with(compact('merk'));
     }
 
     /**
@@ -111,19 +105,16 @@ class MerkController extends Controller
     public function update(Request $request, $id)
     {
         
-        $this->validate($request,[
-            'nama' => 'required|'
-        
-             ]);
+        $this->validate($request, ['nama_merk' => 'required|unique:merks']);
         $merk = merk::findOrFail($id);
-        $merk->nama = $request->nama;
-    $merk->save();
+        $merk->nama_merk = $request->nama_merk;
+        $merk->slug = str_slug($request->nama_merk,'-');
+        $merk->save();
         Session::flash("flash_notification", [
-        "level"=>"success",
-        "message"=>"Berhasil mengedit <b>$merk->merk</b>"
-        ]);
+            "level"=>"success",
+            "message"=>"Berhasil menyimpan $merk->nama_merk"
+            ]);
         return redirect()->route('merk.index');
-
     }
 
 

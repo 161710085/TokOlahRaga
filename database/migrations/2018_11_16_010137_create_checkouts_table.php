@@ -16,26 +16,16 @@ class CreateCheckoutsTable extends Migration
         Schema::create('checkouts', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('id_user');
-            $table->foreign('id_user')->references('id')
-            ->on('users')->onUpdate('cascade')->onDelete('cascade');      
-            $table->string('nama');
-            $table->unsignedInteger('id_prov');
-            $table->foreign('id_prov')->references('id')
-            ->on('provinsis')->onUpdate('cascade')->onDelete('cascade'); 
-            $table->unsignedInteger('id_kota');
-            $table->foreign('id_kota')->references('id')
-            ->on('kotas')->onUpdate('cascade')->onDelete('cascade'); 
-            $table->unsignedInteger('id_kecamatan');
-            $table->foreign('id_kecamatan')->references('id')
-            ->on('kecamatans')->onUpdate('cascade')->onDelete('cascade'); 
-            $table->integer('kodepos');
-            $table->string('alamat');
+            $table->foreign('id_user')->references('id')->on('users')->onDelete('CASCADE');
+            $table->string('nama_lengkap');
+            $table->string('nomer_telepon');
             $table->string('email');
-            $table->integer('phone');
-            $table->unsignedInteger('id_cart');
-            $table->foreign('id_cart')->references('id')
-            ->on('carts')->onUpdate('cascade')->onDelete('cascade'); 
-           
+            $table->string('provinsi');
+            $table->string('kab_kot');
+            $table->string('kecamatan');
+            $table->string('alamat');
+            $table->unsignedInteger('id_barang');
+            $table->foreign('id_barang')->references('id')->on('barangs')->onDelete('CASCADE');
             $table->timestamps();
         });
     }

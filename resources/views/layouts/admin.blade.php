@@ -401,8 +401,6 @@
                                 </li>
                                 <li><a href="{{route('jenis.index')}}">Cabang Olahraga</a>
                                 </li>
-                                <li><a href="{{route('fotbar.index')}}">Foto Barang</a>
-                                </li>
                             </ul>
                         </div>
                         <div id="Interface" class="tab-pane notika-tab-menu-bg animated flipInX">
@@ -584,6 +582,8 @@
 		============================================ -->
     <script src="{{asset('assets/js/jquery.dataTables.min.js')}}"></script>
 <script src="{{asset('assets/js/dataTables.bootstrap.min.js')}}"></script>
+<script src="{{ asset('assets/tinymce/tinymce.min.js') }}"></script>
+        <script>tinymce.init({ selector:'textarea' });</script>
     @yield('scripts')
 </body>
 

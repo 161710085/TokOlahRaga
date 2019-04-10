@@ -7,14 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class kategori extends Model
 {
     protected $table = 'kategoris';
-    protected $fillable = ['nama'];
-    public $timestamps = true;
+    protected $fillable = array('nama_kategori','slug');
+    public $timestamp = true;
 
-    public function barang()
-    {
-        return $this->hasMany('App\barang','id_kategori');
+    public function Barang() {
+        return $this->hasMany('App\barang', 'id_kategori');
     }
-    
+
     public function getRouteKeyName()
     {
         return 'slug';

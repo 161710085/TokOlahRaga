@@ -7,11 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class merk extends Model
 {
     protected $table = 'merks';
-    protected $fillable = ['nama'];
-    public $timestamps = true;
+    protected $fillable = array('nama_merk','slug');
+    public $timestamp = true;
 
-    public function barang()
+    public function Barang() {
+        return $this->hasMany('App\barang', 'id_merk');
+    }
+    
+    public function getRouteKeyName()
     {
-        return $this->hasMany('App\barang','id_barang');
+        return 'slug';
     }
 }

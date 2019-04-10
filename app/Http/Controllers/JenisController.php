@@ -33,11 +33,9 @@ class JenisController extends Controller
                 })->make(true);
     }
     $html = $builder
-        ->addColumn(['data' => 'nama', 'name'=>'nama','title'=>'jenis Barang'])
-    
-        ->addColumn(['data' => 'action', 'name'=>'action', 'title'=>'', 'orderable'=>false,
-                     'searchable'=>false]);
-    return view('jenis.index', compact('html'));
+    ->addColumn(['data' => 'nama_olahraga', 'name'=>'nama_olahraga', 'title'=>'Nama Olahraga'])
+    ->addColumn(['data' => 'action', 'name'=>'action', 'title'=>'Aksi', 'orderable'=>false, 'searchable'=>false]);
+    return view('jenis.index')->with(compact('html'));
     }
 
 
@@ -59,25 +57,17 @@ class JenisController extends Controller
      */
     public function store(Request $request)
     {
-        
-        $this->validate($request,[
-            'nama' => 'required|'
-                
-            ]);
-        $jenis = new jenis;
-        $jenis->nama = $request->nama;
-       
-           $jenis->slug =str_slug($request->nama,'-');
-          $jenis->save();
-
+        $this->validate($request, ['nama_olahraga' => 'required|unique:jenis']);
+        $olahraga = new jenis;
+        $olahraga->nama_olahraga = $request->nama_olahraga;
+        $olahraga->slug = str_slug($request->nama_olahraga,'-');
+        $olahraga->save();
         Session::flash("flash_notification", [
-        "level"=>"success",
-        "message"=>"Berhasil menyimpan <b>$jenis->jenis</b>"
-        ]);
+            "level"=>"success",
+            "message"=>"Berhasil menyimpan $olahraga->nama_olahraga"
+            ]);
         return redirect()->route('jenis.index');
     }
-
-
 
     /**
      * Display the specified resource.
@@ -85,7 +75,7 @@ class JenisController extends Controller
      * @param  \App\jenis  $jenis
      * @return \Illuminate\Http\Response
      */
-    public function show(jenis $jenis)
+    public function show($id)
     {
         $jenis = jenis::findOrFail($id);
         return view('jenis.show',compact('jenis'));
@@ -116,20 +106,16 @@ class JenisController extends Controller
      */
     public function update(Request $request,  $id)
         {
-            $this->validate($request,[
-                'nama' => 'required|'
-            
-                ]);
-            $jenis = jenis::findOrFail($id);
-            $jenis->nama = $request->nama;
-              $jenis->slug =str_slug($request->nama,'-');
-        $jenis->save();
+            $this->validate($request, ['nama_olahraga' => 'required|unique:jenis']);
+            $olahraga = jenis::findOrFail($id);
+            $olahraga->nama_olahraga = $request->nama_olahraga;
+            $olahraga->slug = str_slug($request->nama_olahraga,'-');
+            $olahraga->save();
             Session::flash("flash_notification", [
-            "level"=>"success",
-            "message"=>"Berhasil mengedit <b>$jenis->jenis</b>"
-            ]);
+                "level"=>"success",
+                "message"=>"Berhasil menyimpan $olahraga->nama_olahraga"
+                ]);
             return redirect()->route('jenis.index');
-
         }
 
     /**
@@ -140,13 +126,11 @@ class JenisController extends Controller
      */
     public function destroy( $id)
     {
-        $a = jenis::findOrFail($id);
-        $a->delete();
+        jenis::destroy($id);
         Session::flash("flash_notification", [
         "level"=>"success",
-        "message"=>"Data Berhasil dihapus"
+        "message"=>"Olahraga berhasil dihapus"
         ]);
         return redirect()->route('jenis.index');
-
-}
+    }
 }

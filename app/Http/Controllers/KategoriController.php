@@ -21,25 +21,23 @@ class KategoriController extends Controller
     public function index(Request $request, Builder $builder)
     { 
         if ($request->ajax()) {
-      $kategori = kategori::all();
-        return Datatables::of($kategori)
-                ->addColumn('action', function ($kategori) {  
-                    return view('datatable._action', [
-                    'model'=> $kategori,
-                    'form_url'=> route('kategori.destroy', $kategori->id),
-                    'edit_url' => route('kategori.edit',$kategori->id),
-                    'confirm_message' => 'Yakin mau menghapus ' .$kategori->name . '?'
-    
-                ]);
-                })->make(true);
-    }
-    $html = $builder
-        ->addColumn(['data' => 'nama', 'name'=>'nama','title'=>'Kategori Barang'])
-
-        ->addColumn(['data' => 'action', 'name'=>'action', 'title'=>'', 'orderable'=>false,
-                     'searchable'=>false]);
-    return view('kategori.index', compact('html'));
-    }
+            $kategori = kategori::all();
+             return Datatables::of($kategori)
+                     ->addColumn('action', function ($kategori) {  
+                         return view('datatable._action', [
+                         'model'=> $kategori,
+                         'form_url'=> route('kategori.destroy', $kategori->id),
+                         'edit_url' => route('kategori.edit',$kategori->id),
+                         'confirm_message' => 'Yakin mau menghapus ' .$kategori->nama . '?'
+         
+                     ]);
+                     })->make(true);
+         }
+         $html = $builder
+         ->addColumn(['data' => 'nama_kategori', 'name'=>'nama_kategori', 'title'=>'Nama Kategori'])
+         ->addColumn(['data' => 'action', 'name'=>'action', 'title'=>'Aksi', 'orderable'=>false, 'searchable'=>false]);
+         return view('kategori.index')->with(compact('html'));
+         }
 
     /**
      * Show the form for creating a new resource.
@@ -48,7 +46,7 @@ class KategoriController extends Controller
      */
     public function create()
     {
-         // $jenis =  jenis::all();
+         // $kategori =  kategori::all();
         return view('kategori.create');
        //
     }
@@ -62,23 +60,17 @@ class KategoriController extends Controller
     public function store(Request $request)
     {
     
-        $this->validate($request,[
-            'nama' => 'required|',
-                // 'id_jenis'=>'required|'
-            ]);
+        $this->validate($request, ['nama_kategori' => 'required|unique:kategoris']);
         $kategori = new kategori;
-        $kategori->nama = $request->nama;
-         $kategori->slug =str_slug($request->nama,'-');
-
-            // $kategori->id_jenis = $request->id_jenis;
-          $kategori->save();
+        $kategori->nama_kategori = $request->nama_kategori;
+        $kategori->slug = str_slug($request->nama_kategori,'-');
+        $kategori->save();
         Session::flash("flash_notification", [
-        "level"=>"success",
-        "message"=>"Berhasil menyimpan <b>$kategori->kategori</b>"
-        ]);
+            "level"=>"success",
+            "message"=>"Berhasil menyimpan $kategori->nama_kategori"
+            ]);
         return redirect()->route('kategori.index');
     }
-
      
 
     /**
@@ -102,12 +94,9 @@ class KategoriController extends Controller
      */
     public function edit($id)
     {
-        $kategori = kategori::findOrFail($id);
-        // $jenis = jenis::all();
-        $selectjenis = jenis::findOrFail($id)->id_jenis;
-
-        return view('kategori.edit',compact('kategori','jenis','selectjenis'));
-    }
+        $kategori = kategori::find($kategori->id);
+        return view('kategori.edit')->with(compact('kategori'));
+     }
 
     /**
      * Update the specified resource in storage.
@@ -119,24 +108,17 @@ class KategoriController extends Controller
     public function update(Request $request, $id)
     {
         
-        $this->validate($request,[
-            'nama' => 'required|',
-            // 'id_jenis' => 'required|',
-        
-             ]);
-        $kategori = kategori::findOrFail($id);
-        $kategori->nama = $request->nama;
-          $kategori->slug =str_slug($request->nama,'-');
-          // $kategori->id_jenis = $request->id_jenis;
-    $kategori->save();
+        $this->validate($request, ['nama_kategori' => 'required|unique:kategoris']);
+        $kategori = kategori::findOrFail($kategori->id);
+        $kategori->nama_kategori = $request->nama_kategori;
+        $kategori->slug = str_slug($request->nama_kategori,'-');
+        $kategori->save();
         Session::flash("flash_notification", [
-        "level"=>"success",
-        "message"=>"Berhasil mengedit <b>$kategori->kategori</b>"
-        ]);
+            "level"=>"success",
+            "message"=>"Berhasil menyimpan $kategori->nama_kategori"
+            ]);
         return redirect()->route('kategori.index');
-
     }
-
     /**
      * Remove the specified resource from storage.
      *
@@ -145,13 +127,11 @@ class KategoriController extends Controller
      */
     public function destroy($id)
     {
-        $a = kategori::findOrFail($id);
-        $a->delete();
+        kategori::destroy($kategori->id);
         Session::flash("flash_notification", [
         "level"=>"success",
-        "message"=>"Data Berhasil dihapus"
+        "message"=>"Kategori berhasil dihapus"
         ]);
         return redirect()->route('kategori.index');
-
     }
 }

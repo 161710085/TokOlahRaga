@@ -48,6 +48,12 @@
     <script src="{{asset('fe/js/classy-nav.min.js')}}"></script>
     <!-- Active js -->
     <script src="{{asset('fe/js/active.js')}}"></script>
+    <script src="{{asset('js/cart.js')}}"></script>
+
+ <!--  <script src="https://cloud.tinymce.com/5/tinymce.min.js"></script>
+  <script>tinymce.init({ selector:'textarea' });</script>
+  <textarea>Next, get a free Tiny Cloud API key!</textarea>
+ -->
 
 </body>
 

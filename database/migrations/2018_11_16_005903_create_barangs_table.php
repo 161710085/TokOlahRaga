@@ -15,21 +15,17 @@ class CreateBarangsTable extends Migration
     {
         Schema::create('barangs', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('nama');
-            $table->unsignedInteger('id_kategori');
-            $table->foreign('id_kategori')->references('id')
-            ->on('kategoris')->onUpdate('cascade')->onDelete('cascade');      
-            $table->unsignedInteger('id_merk');
-            $table->foreign('id_merk')->references('id')
-            ->on('merks')->onUpdate('cascade')->onDelete('cascade');      
+            $table->string('nama_barang');
+            $table->text('deskripsi');            
+            $table->double('harga');
+            $table->integer('stock');
             $table->unsignedInteger('id_jenis');
-            $table->foreign('id_jenis')->references('id')
-            ->on('jenis')->onUpdate('cascade')->onDelete('cascade');      
-            $table->string('deskripsi');
-            $table->string('size');
-            $table->string('harga');
-            $table->string('stok');
-            $table->string('slug');
+            $table->foreign('id_jenis')->references('id')->on('jenis')->onDelete('CASCADE');
+            $table->unsignedInteger('id_merk');
+            $table->foreign('id_merk')->references('id')->on('merks')->onDelete('CASCADE');
+            $table->unsignedInteger('id_kategori');
+            $table->foreign('id_kategori')->references('id')->on('kategoris')->onDelete('CASCADE');
+            $table->string('slug')->nullable();
             $table->timestamps();
         });
     }
